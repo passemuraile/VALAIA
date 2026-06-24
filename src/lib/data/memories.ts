@@ -1,3 +1,4 @@
+import type { Memory } from '@/types/valaia'
 
 export const MEMORIES: Memory[] = [
   // ── NATURA ────────────────────────────────────────────────────────────────
