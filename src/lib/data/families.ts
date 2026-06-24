@@ -1,0 +1,73 @@
+import type { Family } from '@/types/valaia'
+
+export const FAMILIES: Family[] = [
+  {
+    key: 'natura',
+    name: 'Natura',
+    emoji: '🏔',
+    hex: '#10b981',
+    bgClass: 'bg-emerald-500/10',
+    borderClass: 'border-emerald-500/30',
+    textClass: 'text-emerald-400',
+    glowClass: 'shadow-[0_0_30px_-8px_#10b981]',
+    description: 'Sommets, lacs, glaciers, faune et flore alpins du Valais.',
+    tagline: 'La montagne te révèle à toi-même.',
+    total: 12,
+  },
+  {
+    key: 'terroir',
+    name: 'Terroir',
+    emoji: '🧀',
+    hex: '#f59e0b',
+    bgClass: 'bg-amber-500/10',
+    borderClass: 'border-amber-500/30',
+    textClass: 'text-amber-400',
+    glowClass: 'shadow-[0_0_30px_-8px_#f59e0b]',
+    description: 'Fromages, vins, produits d\'alpage et spécialités du canton.',
+    tagline: 'Le Valais se goûte autant qu\'il se vit.',
+    total: 10,
+  },
+  {
+    key: 'patrimoine',
+    name: 'Patrimoine',
+    emoji: '🏡',
+    hex: '#3b82f6',
+    bgClass: 'bg-blue-500/10',
+    borderClass: 'border-blue-500/30',
+    textClass: 'text-blue-400',
+    glowClass: 'shadow-[0_0_30px_-8px_#3b82f6]',
+    description: 'Châteaux, bisses, villages médiévaux et monuments historiques.',
+    tagline: 'Chaque pierre a une histoire à raconter.',
+    total: 12,
+  },
+  {
+    key: 'traditions',
+    name: 'Traditions',
+    emoji: '🎭',
+    hex: '#f43f5e',
+    bgClass: 'bg-rose-500/10',
+    borderClass: 'border-rose-500/30',
+    textClass: 'text-rose-400',
+    glowClass: 'shadow-[0_0_30px_-8px_#f43f5e]',
+    description: 'Combats de reines, désalpes, carnavals et folklore valaisan.',
+    tagline: 'Les traditions sont l\'âme vivante d\'un peuple.',
+    total: 8,
+  },
+  {
+    key: 'legendes',
+    name: 'Légendes',
+    emoji: '📜',
+    hex: '#8b5cf6',
+    bgClass: 'bg-violet-500/10',
+    borderClass: 'border-violet-500/30',
+    textClass: 'text-violet-400',
+    glowClass: 'shadow-[0_0_30px_-8px_#8b5cf6]',
+    description: 'Mythes, récits locaux, personnages historiques et lieux mystérieux.',
+    tagline: 'Derrière chaque lieu se cache une histoire oubliée.',
+    total: 8,
+  },
+]
+
+export function getFamily(key: string): Family | undefined {
+  return FAMILIES.find(f => f.key === key)
+}
