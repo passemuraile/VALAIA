@@ -1,41 +1,52 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookOpen, Map, Scroll, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const NAV = [
-  { href: '/codex',  icon: BookOpen, label: 'Codex' },
-  { href: '/atlas',  icon: Map,      label: 'Atlas'  },
-  { href: '/quetes', icon: Scroll,   label: 'Quêtes' },
-  { href: '/moi',    icon: User,     label: 'Moi'    },
+  { href: '/codex', label: 'Codex', icon: '📚' },
+  { href: '/atlas', label: 'Atlas', icon: '🗺️' },
+  { href: '/moi', label: 'Moi', icon: '⛔' },
 ]
 
 export function BottomNav() {
-  const pathname = usePathname()
-
+  const path = usePathname()
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-50">
-      <div className="absolute inset-0 bg-[#060608]/95 backdrop-blur-xl border-t border-white/[0.05]" />
-      <div className="relative flex items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]">
-        {NAV.map(({ href, icon: Icon, label }) => {
-          const active = pathname === href || pathname.startsWith(href + '/')
-          return (
-            <Link
-              key={href}
-              href={href}
-              className="flex flex-col items-center gap-0.5 py-3 px-4 min-w-[56px]"
+    <nav
+      className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-around px-4"
+      style={{
+        background: 'linear-gradient(to top, #0D0F1A 70%, rgba(13,15,26,0) 100%)',
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
+        paddingTop: '12px',
+      }}
+    >
+      {NAV.map(n => {
+        const active = path.startsWith(n.href)
+        return (
+          <Link
+            key={n.href}
+            href={n.href}
+            className={cn(
+              'flex flex-col items-center gap-1 px-8 py-2 rounded-2xl transition-all duration-200',
+              active ? 'opacity-100' : 'opacity-30 hover:opacity-55'
+            )}
+          >
+            <span className="text-xl leading-none">{n.icon}</span>
+            <span
+              className="text-[9px] uppercase tracking-[0.2em]"
+              style={{
+                fontFamily: 'var(--font-cinzel), serif',
+                color: active ? '#C9A84C' : 'rgba(255,255,255,0.5)',
+              }}
             >
-              <div className={cn('w-10 h-8 rounded-xl flex items-center justify-center transition-all duration-150', active ? 'bg-white/10' : '')}>
-                <Icon size={19} className={cn('transition-colors duration-150', active ? 'text-white' : 'text-white/30')} />
-              </div>
-              <span className={cn('text-[10px] font-medium transition-colors duration-150', active ? 'text-white/80' : 'text-white/25')}>
-                {label}
-              </span>
-            </Link>
-          )
-        })}
-      </div>
+              {n.label}
+            </span>
+            {active && (
+              <span className="w-1 h-1 rounded-full" style={{ background: '#C9A84C' }} />
+            )}
+          </Link>
+        )
+      })}
     </nav>
   )
 }

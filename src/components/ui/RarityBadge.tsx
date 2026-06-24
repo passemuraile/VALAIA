@@ -1,39 +1,37 @@
 import { cn } from '@/lib/utils'
 import type { MemoryRarity } from '@/types/valaia'
 
-const CONFIG: Record<MemoryRarity, { label: string; classes: string }> = {
-  commun:     { label: 'Commun',     classes: 'bg-zinc-700/60 text-zinc-300 border-zinc-600/40' },
-  rare:       { label: 'Rare',       classes: 'bg-blue-900/60 text-blue-300 border-blue-500/40' },
-  epique:     { label: 'Épique',     classes: 'bg-violet-900/60 text-violet-300 border-violet-500/40' },
-  legendaire: { label: 'Légendaire', classes: 'bg-amber-900/60 text-amber-300 border-amber-500/40' },
-  mythique:   { label: 'Mythique',   classes: 'bg-rose-900/60 text-rose-300 border-rose-500/40' },
+const RARITY_CONFIG: Record<MemoryRarity, { label: string; color: string; bg: string }> = {
+  commun:     { label: 'Commun',     color: '#9CA3AF', bg: 'rgba(156,163,175,0.12)' },
+  rare:       { label: 'Rare',       color: '#60A5FA', bg: 'rgba(96,165,250,0.12)'  },
+  epique:     { label: 'Épique',     color: '#A78BFA', bg: 'rgba(167,139,250,0.12)' },
+  legendaire: { label: 'Légendaire', color: '#FBBF24', bg: 'rgba(251,191,36,0.12)'  },
+  mythique:   { label: 'Mythique',   color: '#F87171', bg: 'rgba(248,113,113,0.12)' },
+}
+
+export function rarityColor(r: MemoryRarity): string {
+  return RARITY_CONFIG[r]?.color ?? '#9CA3AF'
 }
 
 export function RarityBadge({ rarity, className }: { rarity: MemoryRarity; className?: string }) {
-  const { label, classes } = CONFIG[rarity]
+  const cfg = RARITY_CONFIG[rarity]
+  if (!cfg) return null
+  const isShimmer = rarity === 'legendaire' || rarity === 'mythique'
   return (
-    <span className={cn('inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border', classes, className)}>
-      {label}
+    <span
+      className={cn('inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide', className)}
+      style={{
+        color: cfg.color,
+        background: cfg.bg,
+        border: `1px solid ${cfg.color}30`,
+        ...(isShimmer ? {
+          backgroundImage: `linear-gradient(90deg, ${cfg.bg}, ${cfg.color}25, ${cfg.bg})`,
+          backgroundSize: '200% auto',
+          animation: 'shimmer 2.5s linear infinite',
+        } : {}),
+      }}
+    >
+      {cfg.label}
     </span>
   )
-}
-
-export function rarityGlow(rarity: MemoryRarity): string {
-  return {
-    commun:     '',
-    rare:       'shadow-[0_0_20px_-6px_#3b82f6]',
-    epique:     'shadow-[0_0_20px_-6px_#8b5cf6]',
-    legendaire: 'shadow-[0_0_24px_-6px_#f59e0b]',
-    mythique:   'shadow-[0_0_28px_-6px_#f43f5e]',
-  }[rarity]
-}
-
-export function rarityColor(rarity: MemoryRarity): string {
-  return {
-    commun:     '#71717a',
-    rare:       '#3b82f6',
-    epique:     '#8b5cf6',
-    legendaire: '#f59e0b',
-    mythique:   '#f43f5e',
-  }[rarity]
 }
