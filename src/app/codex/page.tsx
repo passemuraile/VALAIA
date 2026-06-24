@@ -23,48 +23,69 @@ export default function CodexPage() {
     <div className="min-h-screen pb-28 relative z-10">
       <BottomNav />
 
-      {/* Header */}
-      <div className="px-5 pt-14 pb-6 relative overflow-hidden">
+      {/* Hero */}
+      <div className="px-5 pt-14 pb-8 relative overflow-hidden">
         <div
-          className="absolute -top-10 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full blur-3xl opacity-15 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #C9A84C 0%, transparent 70%)' }}
+          className="absolute -top-20 left-1/2 -translate-x-1/2 w-[360px] h-[200px] pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse, rgba(201,168,76,0.18) 0%, transparent 65%)',
+            filter: 'blur(24px)',
+          }}
         />
-        <p className="text-[9px] uppercase tracking-[0.3em] text-white/20 mb-1" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+        <p
+          className="text-[9px] uppercase tracking-[0.4em] text-white/20 mb-1"
+          style={{ fontFamily: 'var(--font-cinzel), serif' }}
+        >
           Codex du Valais
         </p>
-        <h1 className="text-[2.6rem] leading-none mb-1 text-white" style={{ fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic', fontWeight: 600 }}>
-          L’Encyclopédie
+        <h1
+          className="text-[2.9rem] leading-none text-white mb-1"
+          style={{ fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic', fontWeight: 600 }}
+        >
+          L'Encyclopédie
         </h1>
-        <p className="text-[11px] text-white/25">
-          {totalDiscovered} mémoires découvertes · {totalMemories} au total
+        <p className="text-[11px] text-white/22">
+          {totalDiscovered} découvertes · {totalMemories} mémoires · {FAMILIES.length} familles
         </p>
       </div>
 
-      {/* XP + Progression card */}
+      {/* Global progression */}
       <div className="mx-5 mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-5 animate-slide-up">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="text-[9px] uppercase tracking-[0.25em] text-white/20 mb-1" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+            <p
+              className="text-[9px] uppercase tracking-[0.25em] text-white/20 mb-1"
+              style={{ fontFamily: 'var(--font-cinzel), serif' }}
+            >
               Rang actuel
             </p>
-            <p className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+            <p
+              className="text-base font-semibold text-white"
+              style={{ fontFamily: 'var(--font-cinzel), serif' }}
+            >
               {rank.title}
             </p>
-            <p className="text-[11px] text-white/30 mt-0.5">{rank.description}</p>
+            <p
+              className="text-[11px] text-white/25 mt-0.5"
+              style={{ fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic' }}
+            >
+              {rank.description}
+            </p>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold tabular-nums shimmer-gold">
+            <p className="text-2xl font-black tabular-nums shimmer-gold">
               {profile.explorerXp.toLocaleString('fr-CH')}
             </p>
             <p className="text-[10px] text-white/20 mt-0.5">XP total</p>
           </div>
         </div>
-        <div className="h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
+        <div className="h-[6px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
           <div
-            className="h-full rounded-full transition-all duration-1000 ease-out"
+            className="h-full rounded-full transition-all duration-1000"
             style={{
               width: `${pct}%`,
               background: 'linear-gradient(90deg, #C9A84C60, #C9A84C, #E8C96A)',
+              boxShadow: pct > 0 ? '0 0 14px rgba(201,168,76,0.55)' : 'none',
             }}
           />
         </div>
@@ -74,14 +95,21 @@ export default function CodexPage() {
         </div>
       </div>
 
-      {/* Families list */}
+      {/* Family cards */}
       <div className="px-5">
-        <p className="text-[9px] uppercase tracking-[0.3em] text-white/20 mb-4" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
-          Les 11 Familles
+        <p
+          className="text-[9px] uppercase tracking-[0.3em] text-white/20 mb-4"
+          style={{ fontFamily: 'var(--font-cinzel), serif' }}
+        >
+          Les {FAMILIES.length} Familles
         </p>
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-3">
           {FAMILIES.map((family, i) => (
-            <div key={family.key} className="animate-slide-up" style={{ animationDelay: `${i * 0.035}s` }}>
+            <div
+              key={family.key}
+              className="animate-slide-up"
+              style={{ animationDelay: `${i * 0.04}s` }}
+            >
               <FamilyCard
                 family={family}
                 discovered={discoveredByFamily[family.key] ?? 0}
