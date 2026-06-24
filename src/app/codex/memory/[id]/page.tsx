@@ -8,6 +8,7 @@ import { getFamily } from '@/lib/data/families'
 import { useValaiaStore } from '@/store/useValaiaStore'
 import { RarityBadge, rarityColor } from '@/components/ui/RarityBadge'
 import { cn } from '@/lib/utils'
+import type { QuizQuestion } from '@/types/valaia'
 
 const DISCOVERY_LABEL: Record<string, string> = {
   gps: '📍 GPS',
@@ -36,7 +37,6 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
     memory.quiz ? memory.quiz.map(() => null) : []
   )
   const [quizSubmitted, setQuizSubmitted] = useState(false)
-  const [storyExpanded, setStoryExpanded] = useState(false)
 
   const cardColor = rarityColor(memory.rarity)
 
@@ -46,7 +46,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
 
   function handleQuizSubmit() {
     if (!memory.quiz) return
-    const allCorrect = memory.quiz.every((q, i) => quizAnswers[i] === q.correctIndex)
+    const allCorrect = memory.quiz.every((q: QuizQuestion, i: number) => quizAnswers[i] === q.correctIndex)
     if (allCorrect) {
       completeQuiz(memory.id)
       setQuizSubmitted(true)
@@ -55,7 +55,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
 
   const quizAllAnswered = memory.quiz ? quizAnswers.every(a => a !== null) : false
   const quizAllCorrect = memory.quiz
-    ? memory.quiz.every((q, i) => quizAnswers[i] === q.correctIndex)
+    ? memory.quiz.every((q: QuizQuestion, i: number) => quizAnswers[i] === q.correctIndex)
     : false
 
   return (
@@ -165,7 +165,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
                   : <span className="text-base">🧠</span>
                 }
                 <span className="text-sm font-semibold">
-                  {quizDone ? 'Histoire complète débloquée' : 'Débloquer l\'histoire complète'}
+                  {quizDone ? "Histoire complète débloquée" : "Débloquer l'histoire complète"}
                 </span>
               </div>
               {quizActive ? <ChevronUp size={16} className="text-white/30" /> : <ChevronDown size={16} className="text-white/30" />}
@@ -179,10 +179,10 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
                   </div>
                 )}
 
-                {!quizDone && !quizSubmitted && memory.quiz.map((q, qi) => (
+                {!quizDone && !quizSubmitted && memory.quiz.map((q: QuizQuestion, qi: number) => (
                   <div key={qi} className="flex flex-col gap-2 pt-4">
                     <p className="text-sm font-medium text-white/80">{q.question}</p>
-                    {q.options.map((opt, oi) => (
+                    {q.options.map((opt: string, oi: number) => (
                       <button
                         key={oi}
                         onClick={() => {
