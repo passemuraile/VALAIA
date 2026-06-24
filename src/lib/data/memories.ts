@@ -1068,5 +1068,5 @@ export function getMemoriesByFamily(familyKey: string): Memory[] {
 }
 
 export function getAllTags(): string[] {
-  return [...new Set(MEMORIES.flatMap(m => m.tags))].sort()
+  return Array.from(new Set(MEMORIES.flatMap(m => m.tags))).sort()
 }
