@@ -73,7 +73,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
         </Link>
 
         <div className="flex items-center gap-2 mb-3">
-          <span className={cn('text-[11px] font-bold uppercase tracking-widest', family.textClass)}>
+          <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: family.hex }}>
             {family.emoji} {family.name} #{String(memory.index).padStart(3, '0')}
           </span>
           <RarityBadge rarity={memory.rarity} />
@@ -83,7 +83,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
           {discovered ? memory.name : '???'}
         </h1>
         {discovered && (
-          <p className={cn('text-base font-medium', family.textClass)}>{memory.subtitle}</p>
+          <p className="text-base font-medium" style={{ color: family.hex }}>{memory.subtitle}</p>
         )}
 
         {discovered && (
@@ -114,10 +114,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
             </div>
             <button
               onClick={handleDiscover}
-              className={cn(
-                'mt-1 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200',
-                'text-white border border-white/20 bg-white/[0.06] hover:bg-white/10'
-              )}
+              className="mt-1 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-white border border-white/20 bg-white/[0.06] hover:bg-white/10"
               style={{ borderColor: `${family.hex}50` }}
             >
               Simuler la découverte ✦
@@ -249,9 +246,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
             <p className="text-[11px] uppercase tracking-widest text-white/25 mb-3">Connexions</p>
             <div className="flex flex-col gap-2">
               {memory.relatedIds.map((rid: string) => {
-                const rel = (() => {
-                  try { return require('@/lib/data/memories').getMemory(rid) } catch { return null }
-                })()
+                const rel = getMemory(rid)
                 if (!rel) return null
                 const relFamily = getFamily(rel.familyKey)
                 return (
