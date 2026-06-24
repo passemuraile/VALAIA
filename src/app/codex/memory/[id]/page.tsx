@@ -8,7 +8,7 @@ import { getFamily } from '@/lib/data/families'
 import { useValaiaStore } from '@/store/useValaiaStore'
 import { RarityBadge, rarityColor } from '@/components/ui/RarityBadge'
 import { cn } from '@/lib/utils'
-import type { QuizQuestion } from '@/types/valaia'
+import type { QuizQuestion, DiscoveryMode } from '@/types/valaia'
 
 const DISCOVERY_LABEL: Record<string, string> = {
   gps: '📍 GPS',
@@ -53,7 +53,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
     }
   }
 
-  const quizAllAnswered = memory.quiz ? quizAnswers.every(a => a !== null) : false
+  const quizAllAnswered = memory.quiz ? quizAnswers.every((a: number | null) => a !== null) : false
   const quizAllCorrect = memory.quiz
     ? memory.quiz.every((q: QuizQuestion, i: number) => quizAnswers[i] === q.correctIndex)
     : false
@@ -106,7 +106,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
               <p className="text-white/60 text-sm leading-relaxed">{memory.hint}</p>
             </div>
             <div className="flex flex-wrap gap-1.5 justify-center">
-              {memory.discoveryModes.map(m => (
+              {memory.discoveryModes.map((m: DiscoveryMode) => (
                 <span key={m} className="text-[11px] bg-white/[0.06] border border-white/[0.08] rounded-full px-2.5 py-1">
                   {DISCOVERY_LABEL[m]}
                 </span>
@@ -236,7 +236,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
 
         {discovered && (
           <div className="flex flex-wrap gap-1.5">
-            {memory.tags.map(tag => (
+            {memory.tags.map((tag: string) => (
               <span key={tag} className="text-[11px] bg-white/[0.04] border border-white/[0.06] rounded-full px-2.5 py-0.5 text-white/30">
                 #{tag}
               </span>
@@ -248,7 +248,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
           <div>
             <p className="text-[11px] uppercase tracking-widest text-white/25 mb-3">Connexions</p>
             <div className="flex flex-col gap-2">
-              {memory.relatedIds.map(rid => {
+              {memory.relatedIds.map((rid: string) => {
                 const rel = (() => {
                   try { return require('@/lib/data/memories').getMemory(rid) } catch { return null }
                 })()
