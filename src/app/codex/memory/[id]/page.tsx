@@ -1,6 +1,5 @@
 'use client'
-import { use, useState } from 'react'
-import { notFound } from 'next/navigation'
+import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, MapPin, Sparkles, Lock, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react'
 import { getMemory } from '@/lib/data/memories'
@@ -8,6 +7,7 @@ import { getFamily } from '@/lib/data/families'
 import { useValaiaStore } from '@/store/useValaiaStore'
 import { RarityBadge, rarityColor } from '@/components/ui/RarityBadge'
 import { cn } from '@/lib/utils'
+import { BottomNav } from '@/components/layout/BottomNav'
 import type { QuizQuestion, DiscoveryMode } from '@/types/valaia'
 
 const DISCOVERY_LABEL: Record<string, string> = {
@@ -18,48 +18,66 @@ const DISCOVERY_LABEL: Record<string, string> = {
   event: '🎭 Événement',
 }
 
-export default function MemoryPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
-  const maybeMemory = getMemory(id)
-  if (!maybeMemory) notFound()
-  const memory = maybeMemory
-
-  const maybeFamily = getFamily(memory.familyKey)
-  if (!maybeFamily) notFound()
-  const family = maybeFamily
-
+export default function MemoryPage({ params }: { params: { id: string } }) {
+  // All hooks first — no use(params), no conditional hooks
   const { isDiscovered, hasQuizCompleted, discoverMemory, completeQuiz } = useValaiaStore()
-  const discovered = isDiscovered(memory.id)
-  const quizDone = hasQuizCompleted(memory.id)
-
   const [quizActive, setQuizActive] = useState(false)
-  const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>(
-    memory.quiz ? memory.quiz.map(() => null) : []
-  )
+  const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>([])
   const [quizSubmitted, setQuizSubmitted] = useState(false)
 
-  const cardColor = rarityColor(memory.rarity)
+  const memory = getMemory(params.id)
+  const family = memory ? getFamily(memory.familyKey) : undefined
+
+  const discovered = memory ? isDiscovered(memory.id) : false
+  const quizDone = memory ? hasQuizCompleted(memory.id) : false
+  const cardColor = memory ? rarityColor(memory.rarity) : '#9CA3AF'
+
+  // 404 — after all hooks
+  if (!memory || !family) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center pb-28 px-8 text-center relative z-10">
+        <BottomNav />
+        <p className="text-6xl mb-6 opacity-20">🔍</p>
+        <p className="text-[9px] uppercase tracking-[0.3em] text-white/20 mb-2" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+          Introuvable
+        </p>
+        <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+          Mémoire inconnue
+        </h2>
+        <p className="text-sm text-white/30 mb-6" style={{ fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic' }}>
+          Cette mémoire n'existe pas dans le Codex.
+        </p>
+        <Link href="/codex" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/80 transition-colors">
+          <ArrowLeft size={14} /> Retour au Codex
+        </Link>
+      </div>
+    )
+  }
+
+  const quizQuestions = memory.quiz ?? []
+  const quizAllAnswered = quizQuestions.length > 0 && quizAnswers.length === quizQuestions.length && quizAnswers.every(a => a !== null)
+  const quizAllCorrect = quizQuestions.every((q, i) => quizAnswers[i] === q.correctIndex)
 
   function handleDiscover() {
-    discoverMemory(memory.id, memory.xpReward)
+    discoverMemory(memory!.id, memory!.xpReward)
   }
 
   function handleQuizSubmit() {
-    if (!memory.quiz) return
-    const allCorrect = memory.quiz.every((q: QuizQuestion, i: number) => quizAnswers[i] === q.correctIndex)
-    if (allCorrect) {
-      completeQuiz(memory.id)
+    if (quizAllCorrect) {
+      completeQuiz(memory!.id)
       setQuizSubmitted(true)
     }
   }
 
-  const quizAllAnswered = memory.quiz ? quizAnswers.every((a: number | null) => a !== null) : false
-  const quizAllCorrect = memory.quiz
-    ? memory.quiz.every((q: QuizQuestion, i: number) => quizAnswers[i] === q.correctIndex)
-    : false
+  function initQuiz() {
+    setQuizAnswers(quizQuestions.map(() => null))
+    setQuizActive(v => !v)
+  }
 
   return (
     <main className="max-w-lg mx-auto min-h-screen">
+      <BottomNav />
+
       <div
         className="relative px-4 pt-14 pb-10 overflow-hidden"
         style={{ background: `linear-gradient(160deg, ${family.hex}28 0%, ${cardColor}14 50%, transparent 100%)` }}
@@ -73,19 +91,20 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
         </Link>
 
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: family.hex }}>
+          <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: family.hex, fontFamily: 'var(--font-cinzel), serif' }}>
             {family.emoji} {family.name} #{String(memory.index).padStart(3, '0')}
           </span>
           <RarityBadge rarity={memory.rarity} />
         </div>
 
-        <h1 className="text-3xl font-black tracking-tight leading-tight mb-1">
+        <h1 className="text-3xl font-black tracking-tight leading-tight mb-1 text-white" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
           {discovered ? memory.name : '???'}
         </h1>
         {discovered && (
-          <p className="text-base font-medium" style={{ color: family.hex }}>{memory.subtitle}</p>
+          <p className="text-base font-medium" style={{ color: family.hex, fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic' }}>
+            {memory.subtitle}
+          </p>
         )}
-
         {discovered && (
           <div className="flex items-center gap-1.5 mt-3 text-sm text-white/40">
             <MapPin size={13} />
@@ -99,16 +118,15 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
       </div>
 
       <div className="px-4 pb-8 flex flex-col gap-5">
+
         {!discovered && (
           <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] p-6 flex flex-col gap-4 items-center text-center">
             <Lock size={32} className="text-white/20" />
-            <div>
-              <p className="text-white/60 text-sm leading-relaxed">{memory.hint}</p>
-            </div>
+            <p className="text-white/60 text-sm leading-relaxed">{memory.hint}</p>
             <div className="flex flex-wrap gap-1.5 justify-center">
-              {memory.discoveryModes.map((m: DiscoveryMode) => (
+              {(memory.discoveryModes ?? []).map((m: DiscoveryMode) => (
                 <span key={m} className="text-[11px] bg-white/[0.06] border border-white/[0.08] rounded-full px-2.5 py-1">
-                  {DISCOVERY_LABEL[m]}
+                  {DISCOVERY_LABEL[m] ?? m}
                 </span>
               ))}
             </div>
@@ -127,7 +145,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
             className="rounded-2xl border p-5"
             style={{ borderColor: `${family.hex}30`, background: `${family.hex}09` }}
           >
-            <p className="text-[11px] uppercase tracking-widest mb-3" style={{ color: family.hex }}>
+            <p className="text-[11px] uppercase tracking-widest mb-3" style={{ color: family.hex, fontFamily: 'var(--font-cinzel), serif' }}>
               Mémoire débloquée
             </p>
             <p className="text-sm text-white/80 leading-relaxed">{memory.excerpt}</p>
@@ -150,10 +168,10 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
           </div>
         )}
 
-        {discovered && memory.quiz && (
+        {discovered && quizQuestions.length > 0 && (
           <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] overflow-hidden">
             <button
-              onClick={() => setQuizActive(v => !v)}
+              onClick={initQuiz}
               className="w-full flex items-center justify-between px-5 py-4 text-left"
             >
               <div className="flex items-center gap-2">
@@ -161,8 +179,8 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
                   ? <CheckCircle2 size={16} className="text-emerald-400" />
                   : <span className="text-base">🧠</span>
                 }
-                <span className="text-sm font-semibold">
-                  {quizDone ? "Histoire complète débloquée" : "Débloquer l'histoire complète"}
+                <span className="text-sm font-semibold text-white">
+                  {quizDone ? 'Histoire complète débloquée' : "Débloquer l'histoire complète"}
                 </span>
               </div>
               {quizActive ? <ChevronUp size={16} className="text-white/30" /> : <ChevronDown size={16} className="text-white/30" />}
@@ -176,7 +194,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
                   </div>
                 )}
 
-                {!quizDone && !quizSubmitted && memory.quiz.map((q: QuizQuestion, qi: number) => (
+                {!quizDone && !quizSubmitted && quizQuestions.map((q: QuizQuestion, qi: number) => (
                   <div key={qi} className="flex flex-col gap-2 pt-4">
                     <p className="text-sm font-medium text-white/80">{q.question}</p>
                     {q.options.map((opt: string, oi: number) => (
@@ -219,7 +237,7 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
                   <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-3">
                     <p className="text-sm text-rose-300">Certaines réponses sont incorrectes. Réessaie !</p>
                     <button
-                      onClick={() => { setQuizAnswers(memory.quiz!.map(() => null)); setQuizSubmitted(false) }}
+                      onClick={() => { setQuizAnswers(quizQuestions.map(() => null)); setQuizSubmitted(false) }}
                       className="mt-2 text-xs text-white/50 hover:text-white/80 transition-colors"
                     >
                       Recommencer →
@@ -231,9 +249,9 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
           </div>
         )}
 
-        {discovered && (
+        {discovered && (memory.tags ?? []).length > 0 && (
           <div className="flex flex-wrap gap-1.5">
-            {memory.tags.map((tag: string) => (
+            {(memory.tags ?? []).map((tag: string) => (
               <span key={tag} className="text-[11px] bg-white/[0.04] border border-white/[0.06] rounded-full px-2.5 py-0.5 text-white/30">
                 #{tag}
               </span>
@@ -241,24 +259,27 @@ export default function MemoryPage({ params }: { params: Promise<{ id: string }>
           </div>
         )}
 
-        {discovered && memory.relatedIds && memory.relatedIds.length > 0 && (
+        {discovered && (memory.relatedIds ?? []).length > 0 && (
           <div>
-            <p className="text-[11px] uppercase tracking-widest text-white/25 mb-3">Connexions</p>
+            <p className="text-[11px] uppercase tracking-widest text-white/25 mb-3" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+              Connexions
+            </p>
             <div className="flex flex-col gap-2">
-              {memory.relatedIds.map((rid: string) => {
+              {(memory.relatedIds ?? []).map((rid: string) => {
                 const rel = getMemory(rid)
                 if (!rel) return null
                 const relFamily = getFamily(rel.familyKey)
+                if (!relFamily) return null
                 return (
                   <Link
                     key={rid}
                     href={`/codex/memory/${rid}`}
                     className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 hover:bg-white/[0.05] transition-colors"
                   >
-                    <span className="text-xl">{relFamily?.emoji}</span>
+                    <span className="text-xl">{relFamily.emoji}</span>
                     <div>
                       <p className="text-sm text-white/70">{rel.name}</p>
-                      <p className="text-[11px] text-white/30">{relFamily?.name}</p>
+                      <p className="text-[11px] text-white/30">{relFamily.name}</p>
                     </div>
                     <RarityBadge rarity={rel.rarity} className="ml-auto" />
                   </Link>
