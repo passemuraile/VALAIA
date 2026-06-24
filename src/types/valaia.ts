@@ -1,4 +1,7 @@
-export type FamilyKey = 'natura' | 'terroir' | 'patrimoine' | 'traditions' | 'legendes'
+export type FamilyKey =
+  | 'natura' | 'terroir' | 'patrimoine' | 'traditions' | 'legendes'
+  | 'sommets' | 'lacs' | 'bisses' | 'gastronomie' | 'villages'
+  | 'vins' | 'reines' | 'evenements'
 
 export type MemoryRarity = 'commun' | 'rare' | 'epique' | 'legendaire' | 'mythique'
 
@@ -9,6 +12,7 @@ export interface Family {
   name: string
   emoji: string
   hex: string
+  hexDark?: string
   bgClass: string
   borderClass: string
   textClass: string
