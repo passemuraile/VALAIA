@@ -1,6 +1,4 @@
 'use client'
-import { use } from 'react'
-import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { getFamily } from '@/lib/data/families'
@@ -10,17 +8,44 @@ import { MemoryCard } from '@/components/codex/MemoryCard'
 import { BottomNav } from '@/components/layout/BottomNav'
 import type { FamilyKey } from '@/types/valaia'
 
-export default function FamilyPage({ params }: { params: Promise<{ family: string }> }) {
-  const { family: familyKey } = use(params)
-  const family = getFamily(familyKey)
-  if (!family) notFound()
-
+export default function FamilyPage({ params }: { params: { family: string } }) {
+  // Hooks ALWAYS called first — never after a conditional return
   const { profile } = useValaiaStore()
-  const memories = MEMORIES.filter(m => m.familyKey === (familyKey as FamilyKey))
-  const discoveredCount = memories.filter(m => profile.discoveredIds.includes(m.id)).length
-  const total = memories.length || family.total
+
+  const familyKey = params.family
+  const family = getFamily(familyKey)
+  const discoveredIds = profile?.discoveredIds ?? []
+
+  const memories = family
+    ? MEMORIES.filter(m => m.familyKey === (familyKey as FamilyKey))
+    : []
+
+  const discoveredCount = memories.filter(m => discoveredIds.includes(m.id)).length
+  const total = memories.length > 0 ? memories.length : (family?.total ?? 0)
   const pct = total > 0 ? Math.round((discoveredCount / total) * 100) : 0
-  const isComplete = discoveredCount >= total && total > 0
+  const isComplete = total > 0 && discoveredCount >= total
+
+  // 404 — elegant, after all hooks
+  if (!family) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center pb-28 px-8 text-center relative z-10">
+        <BottomNav />
+        <p className="text-6xl mb-6 opacity-20">🗺</p>
+        <p className="text-[9px] uppercase tracking-[0.3em] text-white/20 mb-2" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+          Introuvable
+        </p>
+        <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-cinzel), serif' }}>
+          Cette famille n'existe pas
+        </h2>
+        <p className="text-sm text-white/30 mb-6" style={{ fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic' }}>
+          La carte que tu cherches n'est pas dans le Codex.
+        </p>
+        <Link href="/codex" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/80 transition-colors">
+          <ArrowLeft size={14} /> Retour au Codex
+        </Link>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen pb-28 relative z-10">
@@ -31,7 +56,6 @@ export default function FamilyPage({ params }: { params: Promise<{ family: strin
         className="relative px-5 pt-14 pb-8 overflow-hidden"
         style={{ background: `linear-gradient(180deg, ${family.hex}22 0%, transparent 100%)` }}
       >
-        {/* Color glow */}
         <div
           className="absolute top-0 left-0 right-0 h-44 pointer-events-none"
           style={{
@@ -81,12 +105,9 @@ export default function FamilyPage({ params }: { params: Promise<{ family: strin
           </div>
         </div>
 
-        {/* Progress */}
         <div className="mt-5 relative z-10">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-[10px] text-white/25">
-              {discoveredCount}/{total} découvertes
-            </span>
+            <span className="text-[10px] text-white/25">{discoveredCount}/{total} découvertes</span>
             <div className="flex items-center gap-2">
               {isComplete && (
                 <span
@@ -146,15 +167,11 @@ export default function FamilyPage({ params }: { params: Promise<{ family: strin
         ) : (
           <div className="grid grid-cols-2 gap-3">
             {memories.map((m, i) => (
-              <div
-                key={m.id}
-                className="animate-slide-up"
-                style={{ animationDelay: `${i * 0.045}s` }}
-              >
+              <div key={m.id} className="animate-slide-up" style={{ animationDelay: `${i * 0.045}s` }}>
                 <MemoryCard
                   memory={m}
                   family={family}
-                  discovered={profile.discoveredIds.includes(m.id)}
+                  discovered={discoveredIds.includes(m.id)}
                 />
               </div>
             ))}
