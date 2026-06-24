@@ -23,7 +23,7 @@ export default function CodexPage() {
       <div className="mb-8 animate-fade-in">
         <p className="text-[11px] uppercase tracking-widest text-white/30 mb-1">Ton codex</p>
         <h1 className="text-3xl font-black tracking-tight">LE CODEX</h1>
-        <p className="text-sm text-white/40 mt-1">L\'atlas vivant de ta découverte du Valais</p>
+        <p className="text-sm text-white/40 mt-1">L'atlas vivant de ta découverte du Valais</p>
       </div>
 
       <div className="mb-8 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-5 animate-slide-up">
@@ -41,12 +41,12 @@ export default function CodexPage() {
         </div>
         <ProgressBar value={totalDiscovered} max={totalMemories} />
         <div className="flex justify-between mt-2">
-          <span className="text-[10px] text-white/25">{Math.round((totalDiscovered / totalMemories) * 100)}% de l\'atlas</span>
-          <span className="text-[10px] text-white/25">{profile.explorerXp.toLocaleString(\'fr-CH\')} XP</span>
+          <span className="text-[10px] text-white/25">{Math.round((totalDiscovered / totalMemories) * 100)}% de l'atlas</span>
+          <span className="text-[10px] text-white/25">{profile.explorerXp.toLocaleString('fr-CH')} XP</span>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 animate-slide-up" style={{ animationDelay: \'0.1s\' }}>
+      <div className="flex flex-col gap-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
         <p className="text-[11px] uppercase tracking-widest text-white/30 mb-1">Les 5 familles</p>
         {FAMILIES.map(family => (
           <FamilyCard

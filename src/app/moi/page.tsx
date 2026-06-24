@@ -16,7 +16,7 @@ export default function MoiPage() {
     <div className="min-h-screen pb-24 relative z-10 max-w-lg mx-auto px-4 pt-14">
       <BottomNav />
       <p className="text-[11px] uppercase tracking-widest text-white/30 mb-1">Ton profil</p>
-      <h1 className="text-3xl font-black mb-8">L\'Explorateur</h1>
+      <h1 className="text-3xl font-black mb-8">L'Explorateur</h1>
 
       <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] p-6 flex flex-col gap-4">
         <div className="text-center">
@@ -31,7 +31,7 @@ export default function MoiPage() {
             <p className="text-[10px] text-white/30 mt-0.5">Mémoires</p>
           </div>
           <div className="rounded-xl bg-white/[0.04] p-3">
-            <p className="text-2xl font-black">{profile.explorerXp.toLocaleString(\'fr-CH\')}</p>
+            <p className="text-2xl font-black">{profile.explorerXp.toLocaleString('fr-CH')}</p>
             <p className="text-[10px] text-white/30 mt-0.5">XP total</p>
           </div>
           <div className="rounded-xl bg-white/[0.04] p-3">
